@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Design Directions</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background: #0a0a0a; color: #fff; }
+
+  .page-header {
+    padding: 32px 40px 24px;
+    border-bottom: 1px solid #1a1a1a;
+  }
+  .page-header h1 { font-size: 20px; font-weight: 600; color: #fff; margin-bottom: 4px; }
+  .page-header p { font-size: 14px; color: #666; }
+
+  .tabs {
+    display: flex;
+    gap: 2px;
+    padding: 16px 40px 0;
+    background: #0a0a0a;
+    border-bottom: 1px solid #1a1a1a;
+  }
+  .tab {
+    padding: 10px 20px;
+    font-size: 13px;
+    color: #555;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.15s;
+    border-radius: 4px 4px 0 0;
+    user-select: none;
+  }
+  .tab:hover { color: #aaa; }
+  .tab.active { color: #fff; border-bottom-color: #fff; }
+
+  .preview-container { display: none; }
+  .preview-container.active { display: block; }
+
+  /* ─── OPTION A: Monochrome Minimal ─── */
+  .a-wrap { background: #0a0a0a; min-height: calc(100vh - 130px); display: flex; flex-direction: column; }
+  .a-topbar {
+    height: 52px;
+    background: #0a0a0a;
+    border-bottom: 1px solid #1c1c1c;
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    gap: 32px;
+  }
+  .a-logo { display: flex; align-items: center; gap: 8px; }
+  .a-logo-icon { width: 24px; height: 24px; border-radius: 5px; background: #fff; }
+  .a-logo-text { font-size: 13px; font-weight: 600; color: #fff; letter-spacing: -0.3px; }
+  .a-nav { display: flex; gap: 24px; flex: 1; }
+  .a-nav a { font-size: 13px; color: #555; text-decoration: none; }
+  .a-nav a.active { color: #fff; }
+  .a-user { display: flex; align-items: center; gap: 8px; }
+  .a-avatar { width: 28px; height: 28px; border-radius: 50%; background: #222; border: 1px solid #333; }
+
+  .a-body { display: flex; flex: 1; }
+  .a-sidebar {
+    width: 220px;
+    background: #0a0a0a;
+    border-right: 1px solid #1c1c1c;
+    padding: 20px 12px;
+    flex-shrink: 0;
+  }
+  .a-sidebar-group { margin-bottom: 24px; }
+  .a-sidebar-label { font-size: 10px; color: #333; letter-spacing: 1px; text-transform: uppercase; padding: 0 8px; margin-bottom: 6px; }
+  .a-sidebar-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 7px 8px; border-radius: 5px; font-size: 13px; color: #555; cursor: pointer;
+    margin-bottom: 1px;
+  }
+  .a-sidebar-item:hover { background: #111; color: #aaa; }
+  .a-sidebar-item.active { background: #161616; color: #fff; }
+  .a-sidebar-dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; opacity: 0.4; }
+  .a-sidebar-badge { margin-left: auto; background: #fff; color: #000; font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 10px; }
+
+  .a-main { flex: 1; padding: 28px 32px; }
+  .a-page-title { font-size: 18px; font-weight: 600; color: #fff; margin-bottom: 4px; letter-spacing: -0.4px; }
+  .a-page-sub { font-size: 13px; color: #444; margin-bottom: 24px; }
+
+  .a-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
+  .a-stat {
+    background: #0f0f0f;
+    border: 1px solid #1c1c1c;
+    border-radius: 8px;
+    padding: 16px 18px;
+  }
+  .a-stat-val { font-size: 24px; font-weight: 600; color: #fff; letter-spacing: -0.5px; }
+  .a-stat-label { font-size: 11px; color: #444; margin-top: 2px; }
+
+  .a-grid { display: grid; grid-template-columns: 1fr 340px; gap: 16px; }
+  .a-card {
+    background: #0f0f0f;
+    border: 1px solid #1c1c1c;
+    border-radius: 8px;
+    padding: 20px;
+  }
+  .a-card-title { font-size: 12px; color: #444; letter-spacing: 0.8px; text-transform: uppercase; margin-bottom: 14px; }
+  .a-table-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 0; border-bottom: 1px solid #141414; font-size: 13px;
+  }
+  .a-table-row:last-child { border-bottom: none; }
+  .a-avatar-sm { width: 28px; height: 28px; border-radius: 50%; background: #1e1e1e; flex-shrink: 0; }
+  .a-name { color: #ccc; flex: 1; }
+  .a-rank { font-size: 11px; color: #444; }
+  .a-badge { font-size: 10px; padding: 2px 8px; border-radius: 4px; background: #161616; color: #555; border: 1px solid #222; }
+  .a-badge.green { background: #0f1f0f; color: #3d7a3d; border-color: #1e3a1e; }
+
+  .a-activity-item { padding: 10px 0; border-bottom: 1px solid #141414; display: flex; gap: 10px; align-items: flex-start; }
+  .a-activity-item:last-child { border-bottom: none; }
+  .a-activity-dot { width: 6px; height: 6px; border-radius: 50%; background: #333; margin-top: 4px; flex-shrink: 0; }
+  .a-activity-text { font-size: 12px; color: #666; line-height: 1.5; }
+  .a-activity-time { font-size: 10px; color: #333; margin-top: 2px; }
+
+  /* ─── OPTION B: Dark + Emerald ─── */
+  .b-wrap { background: #080b0f; min-height: calc(100vh - 130px); display: flex; }
+  .b-sidebar {
+    width: 240px;
+    background: #0c1018;
+    border-right: 1px solid #131b26;
+    padding: 20px 16px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .b-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 28px; padding: 0 4px; }
+  .b-logo-icon { width: 28px; height: 28px; border-radius: 7px; background: linear-gradient(135deg,#10b981,#059669); display: flex; align-items: center; justify-content: center; }
+  .b-logo-text { font-size: 14px; font-weight: 700; color: #f1f5f9; letter-spacing: -0.4px; }
+  .b-nav-section { margin-bottom: 20px; }
+  .b-nav-label { font-size: 10px; color: #334155; letter-spacing: 1px; text-transform: uppercase; padding: 0 8px; margin-bottom: 4px; }
+  .b-nav-item {
+    display: flex; align-items: center; gap: 9px;
+    padding: 8px 10px; border-radius: 6px; font-size: 13px; color: #475569; cursor: pointer; margin-bottom: 2px;
+  }
+  .b-nav-item:hover { background: #0f1923; color: #94a3b8; }
+  .b-nav-item.active { background: #10b98115; color: #10b981; }
+  .b-nav-icon { width: 14px; height: 14px; border-radius: 3px; background: currentColor; opacity: 0.4; }
+  .b-nav-badge { margin-left: auto; background: #10b981; color: #000; font-size: 9px; font-weight: 700; padding: 1px 6px; border-radius: 10px; }
+  .b-user-area { margin-top: auto; padding: 12px 10px; background: #0f1923; border-radius: 8px; display: flex; align-items: center; gap: 8px; }
+  .b-user-avatar { width: 28px; height: 28px; border-radius: 50%; background: #10b98130; border: 1px solid #10b98140; }
+  .b-user-name { font-size: 12px; color: #94a3b8; }
+  .b-user-role { font-size: 10px; color: #475569; }
+
+  .b-main { flex: 1; padding: 28px 32px; }
+  .b-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 24px; }
+  .b-page-title { font-size: 20px; font-weight: 700; color: #f1f5f9; letter-spacing: -0.5px; }
+  .b-page-sub { font-size: 13px; color: #475569; margin-top: 2px; }
+  .b-btn { background: #10b981; color: #000; font-size: 12px; font-weight: 600; padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer; }
+
+  .b-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+  .b-stat { background: #0c1018; border: 1px solid #131b26; border-radius: 10px; padding: 18px 20px; }
+  .b-stat.accent { border-color: #10b98125; }
+  .b-stat-val { font-size: 26px; font-weight: 700; color: #f1f5f9; letter-spacing: -0.5px; }
+  .b-stat.accent .b-stat-val { color: #10b981; }
+  .b-stat-label { font-size: 11px; color: #475569; margin-top: 3px; }
+  .b-stat-trend { font-size: 10px; color: #10b981; margin-top: 4px; }
+
+  .b-grid { display: grid; grid-template-columns: 1fr 300px; gap: 16px; }
+  .b-card { background: #0c1018; border: 1px solid #131b26; border-radius: 10px; padding: 20px; }
+  .b-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  .b-card-title { font-size: 13px; font-weight: 600; color: #94a3b8; }
+  .b-card-action { font-size: 11px; color: #10b981; cursor: pointer; }
+  .b-row { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid #131b26; }
+  .b-row:last-child { border-bottom: none; }
+  .b-avatar { width: 30px; height: 30px; border-radius: 50%; background: #0f1923; border: 1px solid #1e2d3d; flex-shrink: 0; }
+  .b-row-name { font-size: 13px; color: #cbd5e1; flex: 1; }
+  .b-row-meta { font-size: 11px; color: #475569; }
+  .b-chip { font-size: 10px; padding: 2px 8px; border-radius: 20px; }
+  .b-chip.green { background: #10b98115; color: #10b981; border: 1px solid #10b98125; }
+  .b-chip.yellow { background: #f0b23215; color: #f0b232; border: 1px solid #f0b23225; }
+  .b-chip.red { background: #ef444415; color: #ef4444; border: 1px solid #ef444425; }
+
+  /* ─── OPTION C: Deep Navy + Indigo ─── */
+  .c-wrap { background: #070c18; min-height: calc(100vh - 130px); display: flex; }
+  .c-icon-bar {
+    width: 60px;
+    background: #07101f;
+    border-right: 1px solid #111e35;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 16px 0;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+  .c-icon-logo { width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg,#6366f1,#4f46e5); margin-bottom: 16px; }
+  .c-icon-btn { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #1e3a5f; }
+  .c-icon-btn.active { background: #6366f115; color: #6366f1; }
+  .c-icon-btn:hover { color: #4a6fa5; }
+  .c-icon-btn svg { width: 16px; height: 16px; }
+
+  .c-sidebar {
+    width: 220px;
+    background: #080e1c;
+    border-right: 1px solid #111e35;
+    padding: 20px 12px;
+    flex-shrink: 0;
+  }
+  .c-sidebar-section { margin-bottom: 24px; }
+  .c-sidebar-label { font-size: 10px; color: #1e3a5f; letter-spacing: 1px; text-transform: uppercase; padding: 0 8px; margin-bottom: 6px; }
+  .c-sidebar-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 7px 10px; border-radius: 6px; font-size: 12px; color: #2d5282; cursor: pointer; margin-bottom: 2px;
+  }
+  .c-sidebar-item:hover { background: #0d1829; color: #4a7ab5; }
+  .c-sidebar-item.active { background: #6366f110; color: #818cf8; border: 1px solid #6366f120; }
+  .c-sidebar-badge { margin-left: auto; background: #6366f1; color: #fff; font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 10px; }
+
+  .c-main { flex: 1; padding: 28px 32px; }
+  .c-topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; }
+  .c-breadcrumb { font-size: 11px; color: #2d5282; }
+  .c-breadcrumb span { color: #e2e8f0; }
+  .c-actions { display: flex; gap: 8px; }
+  .c-btn-ghost { padding: 7px 14px; border: 1px solid #111e35; border-radius: 6px; font-size: 12px; color: #4a7ab5; background: transparent; cursor: pointer; }
+  .c-btn { padding: 7px 14px; border-radius: 6px; font-size: 12px; color: #fff; background: #6366f1; border: none; cursor: pointer; font-weight: 500; }
+
+  .c-page-title { font-size: 22px; font-weight: 700; color: #e2e8f0; letter-spacing: -0.5px; margin-bottom: 4px; }
+  .c-page-sub { font-size: 13px; color: #2d5282; margin-bottom: 24px; }
+
+  .c-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
+  .c-stat { background: #080e1c; border: 1px solid #111e35; border-radius: 10px; padding: 18px 20px; position: relative; overflow: hidden; }
+  .c-stat.highlight { border-color: #6366f130; }
+  .c-stat.highlight::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg,#6366f1,#818cf8); }
+  .c-stat-val { font-size: 26px; font-weight: 700; color: #e2e8f0; letter-spacing: -0.5px; }
+  .c-stat.highlight .c-stat-val { color: #818cf8; }
+  .c-stat-label { font-size: 11px; color: #2d5282; margin-top: 3px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  .c-grid { display: grid; grid-template-columns: 1fr 300px; gap: 16px; }
+  .c-card { background: #080e1c; border: 1px solid #111e35; border-radius: 10px; padding: 20px; }
+  .c-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  .c-card-title { font-size: 13px; font-weight: 600; color: #4a7ab5; letter-spacing: 0.3px; }
+  .c-card-action { font-size: 11px; color: #6366f1; cursor: pointer; }
+  .c-row { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid #0d1829; }
+  .c-row:last-child { border-bottom: none; }
+  .c-avatar { width: 30px; height: 30px; border-radius: 8px; background: #0d1829; border: 1px solid #111e35; flex-shrink: 0; }
+  .c-row-name { font-size: 13px; color: #94a3b8; flex: 1; }
+  .c-row-meta { font-size: 11px; color: #2d5282; }
+  .c-chip { font-size: 10px; padding: 2px 8px; border-radius: 4px; }
+  .c-chip.indigo { background: #6366f115; color: #818cf8; border: 1px solid #6366f125; }
+  .c-chip.green { background: #10b98115; color: #34d399; border: 1px solid #10b98125; }
+  .c-chip.slate { background: #1e2d3d; color: #4a7ab5; border: 1px solid #2d4a6a; }
+
+  /* Selector UI */
+  .selector-bar {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: #111;
+    border-top: 1px solid #222;
+    padding: 12px 40px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 100;
+  }
+  .sel-btn {
+    padding: 8px 20px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid #333;
+    background: transparent;
+    color: #888;
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+  .sel-btn:hover, .sel-btn.selected { background: #fff; color: #000; border-color: #fff; }
+  .sel-label { font-size: 13px; color: #555; margin-right: 4px; }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>Design Direction</h1>
+  <p>Full-size previews of each option. Tabs to switch between them.</p>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="showTab('a', this)">A — Monochrome Minimal</div>
+  <div class="tab" onclick="showTab('b', this)">B — Dark + Emerald</div>
+  <div class="tab" onclick="showTab('c', this)">C — Deep Navy + Indigo</div>
+</div>
+
+<!-- OPTION A -->
+<div id="preview-a" class="preview-container active">
+  <div class="a-wrap">
+    <div class="a-topbar">
+      <div class="a-logo">
+        <div class="a-logo-icon"></div>
+        <span class="a-logo-text">CommunityOS</span>
+      </div>
+      <div class="a-nav">
+        <a href="#" class="active">Dashboard</a>
+        <a href="#">Roster</a>
+        <a href="#">Patrol Logs</a>
+        <a href="#">Documents</a>
+        <a href="#">Admin</a>
+      </div>
+      <div class="a-user">
+        <div class="a-avatar"></div>
+      </div>
+    </div>
+    <div class="a-body">
+      <div class="a-sidebar">
+        <div class="a-sidebar-group">
+          <div class="a-sidebar-label">Overview</div>
+          <div class="a-sidebar-item active"><div class="a-sidebar-dot"></div> Dashboard</div>
+          <div class="a-sidebar-item"><div class="a-sidebar-dot"></div> Announcements</div>
+          <div class="a-sidebar-item"><div class="a-sidebar-dot"></div> Events</div>
+        </div>
+        <div class="a-sidebar-group">
+          <div class="a-sidebar-label">Community</div>
+          <div class="a-sidebar-item"><div class="a-sidebar-dot"></div> Roster</div>
+          <div class="a-sidebar-item"><div class="a-sidebar-dot"></div> Departments</div>
+          <div class="a-sidebar-item"><div class="a-sidebar-dot"></div> Chain of Command</div>
+          <div class="a-sidebar-item"><div class="a-sidebar-dot"></div> Applications <span class="a-sidebar-badge">7</span></div>
+        </div>
+        <div class="a-sidebar-group">
+          <div class="a-sidebar-label">Operations</div>
+          <div class="a-sidebar-item"><div class="a-sidebar-dot"></div> Patrol Logs</div>
+          <div class="a-sidebar-item"><div class="a-sidebar-dot"></div> Shifts</div>
+          <div class="a-sidebar-item"><div class="a-sidebar-dot"></div> SOPs</div>
+          <div class="a-sidebar-item"><div class="a-sidebar-dot"></div> Quizzes</div>
+        </div>
+      </div>
+      <div class="a-main">
+        <div class="a-page-title">Dashboard</div>
+        <div class="a-page-sub">Welcome back, Chief Roberts</div>
+        <div class="a-stats">
+          <div class="a-stat"><div class="a-stat-val">48</div><div class="a-stat-label">Total Members</div></div>
+          <div class="a-stat"><div class="a-stat-val">12</div><div class="a-stat-label">Online Now</div></div>
+          <div class="a-stat"><div class="a-stat-val">7</div><div class="a-stat-label">Applications</div></div>
+          <div class="a-stat"><div class="a-stat-val">3</div><div class="a-stat-label">Pending Actions</div></div>
+        </div>
+        <div class="a-grid">
+          <div class="a-card">
+            <div class="a-card-title">Active Roster</div>
+            <div class="a-table-row">
+              <div class="a-avatar-sm"></div>
+              <div class="a-name">Officer J. Davis</div>
+              <div class="a-rank">Corporal</div>
+              <div class="a-badge green">On Duty</div>
+            </div>
+            <div class="a-table-row">
+              <div class="a-avatar-sm"></div>
+              <div class="a-name">Officer M. Chen</div>
+              <div class="a-rank">Officer I</div>
+              <div class="a-badge">Off Duty</div>
+            </div>
+            <div class="a-table-row">
+              <div class="a-avatar-sm"></div>
+              <div class="a-name">Sgt. R. Williams</div>
+              <div class="a-rank">Sergeant</div>
+              <div class="a-badge green">On Duty</div>
+            </div>
+            <div class="a-table-row">
+              <div class="a-avatar-sm"></div>
+              <div class="a-name">Officer T. Brown</div>
+              <div class="a-rank">Officer II</div>
+              <div class="a-badge">Off Duty</div>
+            </div>
+          </div>
+          <div class="a-card">
+            <div class="a-card-title">Recent Activity</div>
+            <div class="a-activity-item">
+              <div class="a-activity-dot"></div>
+              <div>
+                <div class="a-activity-text">Officer Davis promoted to Corporal</div>
+                <div class="a-activity-time">2 hours ago</div>
+              </div>
+            </div>
+            <div class="a-activity-item">
+              <div class="a-activity-dot"></div>
+              <div>
+                <div class="a-activity-text">Application #47 received from T. Martinez</div>
+                <div class="a-activity-time">4 hours ago</div>
+              </div>
+            </div>
+            <div class="a-activity-item">
+              <div class="a-activity-dot"></div>
+              <div>
+                <div class="a-activity-text">SOP v2.4 published by Chief Roberts</div>
+                <div class="a-activity-time">Yesterday</div>
+              </div>
+            </div>
+            <div class="a-activity-item">
+              <div class="a-activity-dot"></div>
+              <div>
+                <div class="a-activity-text">Patrol log submitted by Sgt. Williams</div>
+                <div class="a-activity-time">Yesterday</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- OPTION B -->
+<div id="preview-b" class="preview-container">
+  <div class="b-wrap">
+    <div class="b-sidebar">
+      <div class="b-logo">
+        <div class="b-logo-icon"></div>
+        <span class="b-logo-text">CommunityOS</span>
+      </div>
+      <div class="b-nav-section">
+        <div class="b-nav-label">Overview</div>
+        <div class="b-nav-item active"><div class="b-nav-icon"></div> Dashboard</div>
+        <div class="b-nav-item"><div class="b-nav-icon"></div> Announcements</div>
+        <div class="b-nav-item"><div class="b-nav-icon"></div> Events</div>
+      </div>
+      <div class="b-nav-section">
+        <div class="b-nav-label">Community</div>
+        <div class="b-nav-item"><div class="b-nav-icon"></div> Roster</div>
+        <div class="b-nav-item"><div class="b-nav-icon"></div> Departments</div>
+        <div class="b-nav-item"><div class="b-nav-icon"></div> Applications <span class="b-nav-badge">7</span></div>
+      </div>
+      <div class="b-nav-section">
+        <div class="b-nav-label">Operations</div>
+        <div class="b-nav-item"><div class="b-nav-icon"></div> Patrol Logs</div>
+        <div class="b-nav-item"><div class="b-nav-icon"></div> Shifts</div>
+        <div class="b-nav-item"><div class="b-nav-icon"></div> SOPs</div>
+      </div>
+      <div class="b-user-area">
+        <div class="b-user-avatar"></div>
+        <div>
+          <div class="b-user-name">Chief Roberts</div>
+          <div class="b-user-role">Administrator</div>
+        </div>
+      </div>
+    </div>
+    <div class="b-main">
+      <div class="b-header">
+        <div>
+          <div class="b-page-title">Dashboard</div>
+          <div class="b-page-sub">Monday, March 30, 2026</div>
+        </div>
+        <button class="b-btn">+ New Application</button>
+      </div>
+      <div class="b-stats">
+        <div class="b-stat"><div class="b-stat-val">48</div><div class="b-stat-label">Total Members</div></div>
+        <div class="b-stat accent"><div class="b-stat-val">12</div><div class="b-stat-label">Online Now</div><div class="b-stat-trend">↑ 3 from yesterday</div></div>
+        <div class="b-stat"><div class="b-stat-val">7</div><div class="b-stat-label">Applications</div></div>
+        <div class="b-stat"><div class="b-stat-val">3</div><div class="b-stat-label">Pending</div></div>
+      </div>
+      <div class="b-grid">
+        <div class="b-card">
+          <div class="b-card-header">
+            <div class="b-card-title">Active Roster</div>
+            <div class="b-card-action">View all →</div>
+          </div>
+          <div class="b-row"><div class="b-avatar"></div><div class="b-row-name">Officer J. Davis</div><div class="b-row-meta">Corporal</div><div class="b-chip green">On Duty</div></div>
+          <div class="b-row"><div class="b-avatar"></div><div class="b-row-name">Officer M. Chen</div><div class="b-row-meta">Officer I</div><div class="b-chip yellow">On LOA</div></div>
+          <div class="b-row"><div class="b-avatar"></div><div class="b-row-name">Sgt. R. Williams</div><div class="b-row-meta">Sergeant</div><div class="b-chip green">On Duty</div></div>
+          <div class="b-row"><div class="b-avatar"></div><div class="b-row-name">Officer T. Brown</div><div class="b-row-meta">Officer II</div><div class="b-chip red">Inactive</div></div>
+        </div>
+        <div class="b-card">
+          <div class="b-card-header">
+            <div class="b-card-title">Recent Activity</div>
+            <div class="b-card-action">View all</div>
+          </div>
+          <div class="b-row" style="gap:10px;align-items:flex-start;padding:10px 0;">
+            <div style="width:6px;height:6px;border-radius:50%;background:#10b981;margin-top:5px;flex-shrink:0;"></div>
+            <div><div style="font-size:12px;color:#94a3b8;">Davis promoted to Corporal</div><div style="font-size:10px;color:#475569;margin-top:2px;">2 hours ago</div></div>
+          </div>
+          <div class="b-row" style="gap:10px;align-items:flex-start;padding:10px 0;">
+            <div style="width:6px;height:6px;border-radius:50%;background:#10b981;margin-top:5px;flex-shrink:0;"></div>
+            <div><div style="font-size:12px;color:#94a3b8;">Application #47 received</div><div style="font-size:10px;color:#475569;margin-top:2px;">4 hours ago</div></div>
+          </div>
+          <div class="b-row" style="gap:10px;align-items:flex-start;padding:10px 0;">
+            <div style="width:6px;height:6px;border-radius:50%;background:#f0b232;margin-top:5px;flex-shrink:0;"></div>
+            <div><div style="font-size:12px;color:#94a3b8;">SOP v2.4 published</div><div style="font-size:10px;color:#475569;margin-top:2px;">Yesterday</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- OPTION C -->
+<div id="preview-c" class="preview-container">
+  <div class="c-wrap">
+    <div class="c-icon-bar">
+      <div class="c-icon-logo"></div>
+      <div class="c-icon-btn active">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1" stroke-width="1.5"/><rect x="14" y="3" width="7" height="7" rx="1" stroke-width="1.5"/><rect x="3" y="14" width="7" height="7" rx="1" stroke-width="1.5"/><rect x="14" y="14" width="7" height="7" rx="1" stroke-width="1.5"/></svg>
+      </div>
+      <div class="c-icon-btn">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke-width="1.5"/><circle cx="9" cy="7" r="4" stroke-width="1.5"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke-width="1.5"/></svg>
+      </div>
+      <div class="c-icon-btn">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke-width="1.5"/><polyline points="14 2 14 8 20 8" stroke-width="1.5"/></svg>
+      </div>
+      <div class="c-icon-btn">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" stroke-width="1.5"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83" stroke-width="1.5"/></svg>
+      </div>
+    </div>
+    <div class="c-sidebar">
+      <div class="c-sidebar-section">
+        <div class="c-sidebar-label">General</div>
+        <div class="c-sidebar-item active">Dashboard</div>
+        <div class="c-sidebar-item">Announcements</div>
+        <div class="c-sidebar-item">Events</div>
+        <div class="c-sidebar-item">Messages</div>
+      </div>
+      <div class="c-sidebar-section">
+        <div class="c-sidebar-label">Personnel</div>
+        <div class="c-sidebar-item">Roster</div>
+        <div class="c-sidebar-item">Departments</div>
+        <div class="c-sidebar-item">Chain of Command</div>
+        <div class="c-sidebar-item">Applications <span class="c-sidebar-badge">7</span></div>
+        <div class="c-sidebar-item">Transfers</div>
+      </div>
+      <div class="c-sidebar-section">
+        <div class="c-sidebar-label">Operations</div>
+        <div class="c-sidebar-item">Patrol Logs</div>
+        <div class="c-sidebar-item">Shifts</div>
+        <div class="c-sidebar-item">SOPs</div>
+        <div class="c-sidebar-item">Quizzes</div>
+      </div>
+    </div>
+    <div class="c-main">
+      <div class="c-topbar">
+        <div class="c-breadcrumb">Community / <span>Dashboard</span></div>
+        <div class="c-actions">
+          <button class="c-btn-ghost">Export</button>
+          <button class="c-btn">+ New</button>
+        </div>
+      </div>
+      <div class="c-page-title">Dashboard</div>
+      <div class="c-page-sub">Welcome back, Chief Roberts — Monday, March 30</div>
+      <div class="c-stats">
+        <div class="c-stat"><div class="c-stat-val">48</div><div class="c-stat-label">Members</div></div>
+        <div class="c-stat highlight"><div class="c-stat-val">12</div><div class="c-stat-label">Online</div></div>
+        <div class="c-stat"><div class="c-stat-val">7</div><div class="c-stat-label">Applications</div></div>
+        <div class="c-stat"><div class="c-stat-val">3</div><div class="c-stat-label">Pending</div></div>
+      </div>
+      <div class="c-grid">
+        <div class="c-card">
+          <div class="c-card-header">
+            <div class="c-card-title">Active Roster</div>
+            <div class="c-card-action">View all →</div>
+          </div>
+          <div class="c-row"><div class="c-avatar"></div><div class="c-row-name">Officer J. Davis</div><div class="c-row-meta">Corporal · LSPD</div><div class="c-chip green">On Duty</div></div>
+          <div class="c-row"><div class="c-avatar"></div><div class="c-row-name">Officer M. Chen</div><div class="c-row-meta">Officer I · EMS</div><div class="c-chip slate">On LOA</div></div>
+          <div class="c-row"><div class="c-avatar"></div><div class="c-row-name">Sgt. R. Williams</div><div class="c-row-meta">Sergeant · LSPD</div><div class="c-chip green">On Duty</div></div>
+          <div class="c-row"><div class="c-avatar"></div><div class="c-row-name">Officer T. Brown</div><div class="c-row-meta">Officer II · DOC</div><div class="c-chip indigo">Training</div></div>
+        </div>
+        <div class="c-card">
+          <div class="c-card-header">
+            <div class="c-card-title">Recent Activity</div>
+            <div class="c-card-action">View all</div>
+          </div>
+          <div class="c-row" style="gap:10px;align-items:flex-start;padding:10px 0;">
+            <div style="width:28px;height:28px;border-radius:6px;background:#6366f110;border:1px solid #6366f120;flex-shrink:0;"></div>
+            <div><div style="font-size:12px;color:#94a3b8;">Davis promoted to Corporal</div><div style="font-size:10px;color:#2d5282;margin-top:2px;">2 hours ago</div></div>
+          </div>
+          <div class="c-row" style="gap:10px;align-items:flex-start;padding:10px 0;">
+            <div style="width:28px;height:28px;border-radius:6px;background:#10b98110;border:1px solid #10b98120;flex-shrink:0;"></div>
+            <div><div style="font-size:12px;color:#94a3b8;">Application #47 received</div><div style="font-size:10px;color:#2d5282;margin-top:2px;">4 hours ago</div></div>
+          </div>
+          <div class="c-row" style="gap:10px;align-items:flex-start;padding:10px 0;">
+            <div style="width:28px;height:28px;border-radius:6px;background:#6366f110;border:1px solid #6366f120;flex-shrink:0;"></div>
+            <div><div style="font-size:12px;color:#94a3b8;">SOP v2.4 published</div><div style="font-size:10px;color:#2d5282;margin-top:2px;">Yesterday</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="selector-bar">
+  <span class="sel-label">Your pick:</span>
+  <button class="sel-btn" id="sel-a" onclick="select('a')">A — Monochrome Minimal</button>
+  <button class="sel-btn" id="sel-b" onclick="select('b')">B — Dark + Emerald</button>
+  <button class="sel-btn" id="sel-c" onclick="select('c')">C — Deep Navy + Indigo</button>
+</div>
+
+<script>
+function showTab(id, el) {
+  document.querySelectorAll('.preview-container').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('preview-' + id).classList.add('active');
+  el.classList.add('active');
+}
+function select(choice) {
+  document.querySelectorAll('.sel-btn').forEach(b => b.classList.remove('selected'));
+  document.getElementById('sel-' + choice).classList.add('selected');
+  // Report selection
+  if (window.__superpowers_report) window.__superpowers_report(choice, document.getElementById('sel-' + choice).textContent);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hybrid — A Colors + C Layout</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background: #0a0a0a; color: #fff; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+
+  /* ── TOP BAR ── */
+  .topbar {
+    height: 48px;
+    background: #0a0a0a;
+    border-bottom: 1px solid #1a1a1a;
+    display: flex;
+    align-items: center;
+    padding: 0 16px 0 0;
+    flex-shrink: 0;
+    gap: 0;
+  }
+  .topbar-logo-zone {
+    width: 60px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-right: 1px solid #1a1a1a;
+    flex-shrink: 0;
+  }
+  .logo-icon {
+    width: 26px; height: 26px;
+    border-radius: 6px;
+    background: #fff;
+  }
+  .topbar-brand {
+    padding: 0 16px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+    letter-spacing: -0.3px;
+    border-right: 1px solid #1a1a1a;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    width: 220px;
+    flex-shrink: 0;
+  }
+  .topbar-right {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+  }
+  .topbar-breadcrumb { font-size: 12px; color: #333; }
+  .topbar-breadcrumb span { color: #888; }
+  .topbar-actions { display: flex; align-items: center; gap: 10px; }
+  .topbar-search {
+    background: #111;
+    border: 1px solid #1e1e1e;
+    border-radius: 6px;
+    padding: 5px 12px;
+    font-size: 12px;
+    color: #444;
+    width: 180px;
+  }
+  .topbar-avatar {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: #1e1e1e;
+    border: 1px solid #2a2a2a;
+  }
+  .topbar-notif {
+    width: 28px; height: 28px;
+    border-radius: 6px;
+    background: transparent;
+    display: flex; align-items: center; justify-content: center;
+    color: #444;
+  }
+
+  /* ── BODY ── */
+  .body { display: flex; flex: 1; overflow: hidden; }
+
+  /* ── ICON BAR ── */
+  .icon-bar {
+    width: 60px;
+    background: #080808;
+    border-right: 1px solid #1a1a1a;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 12px 0;
+    gap: 2px;
+    flex-shrink: 0;
+  }
+  .icon-btn {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    color: #2e2e2e;
+    transition: all 0.15s;
+  }
+  .icon-btn:hover { background: #111; color: #555; }
+  .icon-btn.active { background: #161616; color: #fff; }
+  .icon-btn svg { width: 16px; height: 16px; }
+  .icon-divider { width: 24px; height: 1px; background: #1a1a1a; margin: 6px 0; }
+  .icon-spacer { flex: 1; }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width: 220px;
+    background: #0a0a0a;
+    border-right: 1px solid #1a1a1a;
+    padding: 16px 10px;
+    flex-shrink: 0;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .nav-section {}
+  .nav-label {
+    font-size: 10px;
+    color: #2e2e2e;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 0 8px;
+    margin-bottom: 4px;
+  }
+  .nav-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 8px;
+    border-radius: 5px;
+    font-size: 12px;
+    color: #444;
+    cursor: pointer;
+    margin-bottom: 1px;
+    transition: all 0.1s;
+  }
+  .nav-item:hover { background: #0f0f0f; color: #888; }
+  .nav-item.active { background: #141414; color: #fff; }
+  .nav-item svg { width: 13px; height: 13px; flex-shrink: 0; opacity: 0.7; }
+  .nav-badge {
+    margin-left: auto;
+    background: #fff;
+    color: #000;
+    font-size: 9px;
+    font-weight: 700;
+    padding: 1px 5px;
+    border-radius: 10px;
+    line-height: 1.4;
+  }
+
+  /* ── MAIN ── */
+  .main { flex: 1; padding: 28px 32px; overflow-y: auto; }
+
+  .page-header { margin-bottom: 24px; display: flex; justify-content: space-between; align-items: flex-start; }
+  .page-title { font-size: 20px; font-weight: 600; color: #fff; letter-spacing: -0.5px; }
+  .page-sub { font-size: 13px; color: #3a3a3a; margin-top: 3px; }
+  .btn-primary {
+    background: #fff;
+    color: #000;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 7px 16px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .btn-ghost {
+    background: transparent;
+    color: #555;
+    font-size: 12px;
+    padding: 7px 14px;
+    border-radius: 6px;
+    border: 1px solid #1e1e1e;
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  /* ── STATS ── */
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+  .stat-card {
+    background: #0f0f0f;
+    border: 1px solid #1c1c1c;
+    border-radius: 8px;
+    padding: 16px 18px;
+  }
+  .stat-card.highlight { border-top: 2px solid #fff; }
+  .stat-val { font-size: 24px; font-weight: 600; color: #fff; letter-spacing: -0.5px; }
+  .stat-label { font-size: 11px; color: #383838; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.4px; }
+  .stat-trend { font-size: 10px; color: #555; margin-top: 4px; }
+
+  /* ── CONTENT GRID ── */
+  .content-grid { display: grid; grid-template-columns: 1fr 300px; gap: 14px; }
+
+  .card {
+    background: #0f0f0f;
+    border: 1px solid #1c1c1c;
+    border-radius: 8px;
+    padding: 18px 20px;
+  }
+  .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+  .card-title { font-size: 11px; color: #333; letter-spacing: 0.8px; text-transform: uppercase; }
+  .card-action { font-size: 11px; color: #444; cursor: pointer; }
+  .card-action:hover { color: #888; }
+
+  /* Table rows */
+  .table-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 0;
+    border-bottom: 1px solid #141414;
+  }
+  .table-row:last-child { border-bottom: none; }
+  .row-avatar { width: 28px; height: 28px; border-radius: 6px; background: #161616; border: 1px solid #1e1e1e; flex-shrink: 0; }
+  .row-name { font-size: 13px; color: #bbb; flex: 1; }
+  .row-meta { font-size: 11px; color: #383838; }
+  .chip { font-size: 10px; padding: 2px 8px; border-radius: 4px; border: 1px solid; }
+  .chip-active { background: #0f180f; color: #4a7a4a; border-color: #1e2e1e; }
+  .chip-loa { background: #181410; color: #6a5a30; border-color: #2e2410; }
+  .chip-inactive { background: #181010; color: #6a3030; border-color: #2e1414; }
+  .chip-training { background: #101418; color: #304a6a; border-color: #10202e; }
+
+  /* Activity */
+  .activity-item {
+    display: flex; gap: 10px; align-items: flex-start;
+    padding: 9px 0;
+    border-bottom: 1px solid #141414;
+  }
+  .activity-item:last-child { border-bottom: none; }
+  .activity-icon {
+    width: 26px; height: 26px;
+    border-radius: 5px;
+    background: #141414;
+    border: 1px solid #1e1e1e;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    color: #333;
+  }
+  .activity-icon svg { width: 12px; height: 12px; }
+  .activity-text { font-size: 12px; color: #666; line-height: 1.5; }
+  .activity-time { font-size: 10px; color: #2e2e2e; margin-top: 2px; }
+
+  /* Dept list */
+  .dept-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #141414;
+  }
+  .dept-row:last-child { border-bottom: none; }
+  .dept-name { font-size: 12px; color: #666; }
+  .dept-count { font-size: 13px; color: #fff; font-weight: 500; }
+  .dept-bar-wrap { width: 60px; height: 3px; background: #1a1a1a; border-radius: 2px; overflow: hidden; }
+  .dept-bar { height: 100%; background: #333; border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-logo-zone">
+    <div class="logo-icon"></div>
+  </div>
+  <div class="topbar-brand">CommunityOS</div>
+  <div class="topbar-right">
+    <div class="topbar-breadcrumb">Overview / <span>Dashboard</span></div>
+    <div class="topbar-actions">
+      <div class="topbar-search">Search...</div>
+      <div class="topbar-notif">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="15" height="15"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0" stroke-width="1.5"/></svg>
+      </div>
+      <div class="topbar-avatar"></div>
+    </div>
+  </div>
+</div>
+
+<!-- BODY -->
+<div class="body">
+
+  <!-- ICON BAR -->
+  <div class="icon-bar">
+    <div class="icon-btn active" title="Dashboard">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1" stroke-width="1.5"/><rect x="14" y="3" width="7" height="7" rx="1" stroke-width="1.5"/><rect x="3" y="14" width="7" height="7" rx="1" stroke-width="1.5"/><rect x="14" y="14" width="7" height="7" rx="1" stroke-width="1.5"/></svg>
+    </div>
+    <div class="icon-btn" title="Roster">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke-width="1.5"/><circle cx="9" cy="7" r="4" stroke-width="1.5"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke-width="1.5"/></svg>
+    </div>
+    <div class="icon-divider"></div>
+    <div class="icon-btn" title="Documents">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke-width="1.5"/><polyline points="14 2 14 8 20 8" stroke-width="1.5"/><line x1="16" y1="13" x2="8" y2="13" stroke-width="1.5"/><line x1="16" y1="17" x2="8" y2="17" stroke-width="1.5"/></svg>
+    </div>
+    <div class="icon-btn" title="Calendar">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" stroke-width="1.5"/><line x1="16" y1="2" x2="16" y2="6" stroke-width="1.5"/><line x1="8" y1="2" x2="8" y2="6" stroke-width="1.5"/><line x1="3" y1="10" x2="21" y2="10" stroke-width="1.5"/></svg>
+    </div>
+    <div class="icon-btn" title="Patrol Logs">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4" stroke-width="1.5"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" stroke-width="1.5"/></svg>
+    </div>
+    <div class="icon-spacer"></div>
+    <div class="icon-btn" title="Settings">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3" stroke-width="1.5"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83" stroke-width="1.5"/></svg>
+    </div>
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="nav-section">
+      <div class="nav-label">General</div>
+      <div class="nav-item active">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1" stroke-width="1.5"/><rect x="14" y="3" width="7" height="7" rx="1" stroke-width="1.5"/><rect x="3" y="14" width="7" height="7" rx="1" stroke-width="1.5"/><rect x="14" y="14" width="7" height="7" rx="1" stroke-width="1.5"/></svg>
+        Dashboard
+      </div>
+      <div class="nav-item">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M22 17H2a3 3 0 0 0 3-3V9a7 7 0 0 1 14 0v5a3 3 0 0 0 3 3z" stroke-width="1.5"/><path d="M13.73 21a2 2 0 0 1-3.46 0" stroke-width="1.5"/></svg>
+        Announcements
+      </div>
+      <div class="nav-item">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" stroke-width="1.5"/><line x1="16" y1="2" x2="16" y2="6" stroke-width="1.5"/><line x1="8" y1="2" x2="8" y2="6" stroke-width="1.5"/><line x1="3" y1="10" x2="21" y2="10" stroke-width="1.5"/></svg>
+        Events
+      </div>
+      <div class="nav-item">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke-width="1.5"/></svg>
+        Messages
+      </div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Personnel</div>
+      <div class="nav-item">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke-width="1.5"/><circle cx="9" cy="7" r="4" stroke-width="1.5"/></svg>
+        Roster
+      </div>
+      <div class="nav-item">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke-width="1.5"/><circle cx="9" cy="7" r="4" stroke-width="1.5"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" stroke-width="1.5"/></svg>
+        Departments
+      </div>
+      <div class="nav-item">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" stroke-width="1.5"/></svg>
+        Chain of Command
+      </div>
+      <div class="nav-item">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke-width="1.5"/><polyline points="14 2 14 8 20 8" stroke-width="1.5"/></svg>
+        Applications
+        <span class="nav-badge">7</span>
+      </div>
+      <div class="nav-item">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9" stroke-width="1.5"/><path d="M3 11V9a4 4 0 0 1 4-4h14M7 23l-4-4 4-4" stroke-width="1.5"/><path d="M21 13v2a4 4 0 0 1-4 4H3" stroke-width="1.5"/></svg>
+        Transfers
+      </div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Operations</div>
+      <div class="nav-item">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4" stroke-width="1.5"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" stroke-width="1.5"/></svg>
+        Patrol Logs
+      </div>
+      <div class="nav-item">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-width="1.5"/><polyline points="12 6 12 12 16 14" stroke-width="1.5"/></svg>
+        Shifts
+      </div>
+      <div class="nav-item">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" stroke-width="1.5"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" stroke-width="1.5"/></svg>
+        SOPs
+      </div>
+      <div class="nav-item">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-width="1.5"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" stroke-width="1.5"/><line x1="12" y1="17" x2="12.01" y2="17" stroke-width="2"/></svg>
+        Quizzes
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="main">
+    <div class="page-header">
+      <div>
+        <div class="page-title">Dashboard</div>
+        <div class="page-sub">Welcome back, Chief Roberts — Monday, March 30</div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn-ghost">Export</button>
+        <button class="btn-primary">+ New</button>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat-card">
+        <div class="stat-val">48</div>
+        <div class="stat-label">Members</div>
+      </div>
+      <div class="stat-card highlight">
+        <div class="stat-val">12</div>
+        <div class="stat-label">Online Now</div>
+        <div class="stat-trend">↑ 3 from yesterday</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val">7</div>
+        <div class="stat-label">Applications</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val">3</div>
+        <div class="stat-label">Pending Actions</div>
+      </div>
+    </div>
+
+    <div class="content-grid">
+      <!-- Left: Roster table -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Active Roster</div>
+          <div class="card-action">View all →</div>
+        </div>
+        <div class="table-row">
+          <div class="row-avatar"></div>
+          <div class="row-name">Officer J. Davis</div>
+          <div class="row-meta">Corporal · LSPD</div>
+          <div class="chip chip-active">On Duty</div>
+        </div>
+        <div class="table-row">
+          <div class="row-avatar"></div>
+          <div class="row-name">Officer M. Chen</div>
+          <div class="row-meta">Officer I · EMS</div>
+          <div class="chip chip-loa">On LOA</div>
+        </div>
+        <div class="table-row">
+          <div class="row-avatar"></div>
+          <div class="row-name">Sgt. R. Williams</div>
+          <div class="row-meta">Sergeant · LSPD</div>
+          <div class="chip chip-active">On Duty</div>
+        </div>
+        <div class="table-row">
+          <div class="row-avatar"></div>
+          <div class="row-name">Officer T. Brown</div>
+          <div class="row-meta">Officer II · DOC</div>
+          <div class="chip chip-training">In Training</div>
+        </div>
+        <div class="table-row">
+          <div class="row-avatar"></div>
+          <div class="row-name">Cpl. A. Martinez</div>
+          <div class="row-meta">Corporal · LSPD</div>
+          <div class="chip chip-inactive">Inactive</div>
+        </div>
+      </div>
+
+      <!-- Right: Activity + Departments -->
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Recent Activity</div>
+            <div class="card-action">All activity</div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-icon">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke-width="1.5"/></svg>
+            </div>
+            <div>
+              <div class="activity-text">Davis promoted to Corporal</div>
+              <div class="activity-time">2 hours ago</div>
+            </div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-icon">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke-width="1.5"/><polyline points="14 2 14 8 20 8" stroke-width="1.5"/></svg>
+            </div>
+            <div>
+              <div class="activity-text">Application #47 received</div>
+              <div class="activity-time">4 hours ago</div>
+            </div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-icon">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" stroke-width="1.5"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" stroke-width="1.5"/></svg>
+            </div>
+            <div>
+              <div class="activity-text">SOP v2.4 published</div>
+              <div class="activity-time">Yesterday</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Departments</div>
+            <div class="card-action">Manage</div>
+          </div>
+          <div class="dept-row">
+            <div class="dept-name">LSPD</div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div class="dept-bar-wrap"><div class="dept-bar" style="width:60%;"></div></div>
+              <div class="dept-count">24</div>
+            </div>
+          </div>
+          <div class="dept-row">
+            <div class="dept-name">EMS</div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div class="dept-bar-wrap"><div class="dept-bar" style="width:35%;"></div></div>
+              <div class="dept-count">14</div>
+            </div>
+          </div>
+          <div class="dept-row">
+            <div class="dept-name">DOC</div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div class="dept-bar-wrap"><div class="dept-bar" style="width:25%;"></div></div>
+              <div class="dept-count">10</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,7 @@
+RewriteEngine On
+RewriteBase /api/v1/
+
+# Route all requests to index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php?endpoint=$1 [QSA,L]

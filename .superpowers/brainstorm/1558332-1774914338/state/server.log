@@ -1,0 +1,8 @@
+{"type":"server-started","port":57939,"host":"0.0.0.0","url_host":"localhost","url":"http://localhost:57939","screen_dir":"/var/www/community.ultmods.com/.superpowers/brainstorm/1558332-1774914338/content","state_dir":"/var/www/community.ultmods.com/.superpowers/brainstorm/1558332-1774914338/state"}
+{"type":"screen-added","file":"/var/www/community.ultmods.com/.superpowers/brainstorm/1558332-1774914338/content/design-direction.html"}
+{"type":"screen-added","file":"/var/www/community.ultmods.com/.superpowers/brainstorm/1558332-1774914338/content/waiting-1.html"}
+{"type":"screen-added","file":"/var/www/community.ultmods.com/.superpowers/brainstorm/1558332-1774914338/content/design-professional.html"}
+{"type":"screen-added","file":"/var/www/community.ultmods.com/.superpowers/brainstorm/1558332-1774914338/content/designs-fullsize.html"}
+{"type":"screen-added","file":"/var/www/community.ultmods.com/.superpowers/brainstorm/1558332-1774914338/content/design-hybrid.html"}
+{"type":"screen-added","file":"/var/www/community.ultmods.com/.superpowers/brainstorm/1558332-1774914338/content/waiting-2.html"}
+{"type":"server-stopped","reason":"idle timeout"}
