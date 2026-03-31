@@ -8,3 +8,4 @@ if (typeof globalThis.TextEncoder === 'undefined') {
 if (typeof globalThis.TextDecoder === 'undefined') {
   globalThis.TextDecoder = TextDecoder as typeof globalThis.TextDecoder
 }
+
