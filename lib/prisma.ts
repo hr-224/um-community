@@ -1,7 +1,10 @@
 import { PrismaMariaDb } from '@prisma/adapter-mariadb'
 import { PrismaClient } from './generated/prisma/client'
 
-const adapter = new PrismaMariaDb(process.env.DATABASE_URL!)
+if (!process.env.DATABASE_URL) {
+  throw new Error('DATABASE_URL environment variable is not set')
+}
+const adapter = new PrismaMariaDb(process.env.DATABASE_URL)
 
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient }
 

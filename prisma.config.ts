@@ -1,9 +1,10 @@
 // Prisma 7 configuration — reads from .env.local for Next.js compatibility
 import { config } from "dotenv";
 import { defineConfig } from "prisma/config";
+import path from "path";
 
 // Load .env.local (Next.js convention) before .env
-config({ path: ".env.local" });
+config({ path: path.resolve(process.cwd(), ".env.local") });
 config(); // fallback to .env
 
 export default defineConfig({
