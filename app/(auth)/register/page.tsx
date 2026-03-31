@@ -12,7 +12,6 @@ import { Card } from '@/components/ui/Card'
 const schema = z.object({
   email: z.string().email('Invalid email'),
   password: z.string().min(8, 'At least 8 characters'),
-  name: z.string().min(1, 'Name is required'),
 })
 type FormData = z.infer<typeof schema>
 
@@ -52,7 +51,6 @@ export default function RegisterPage() {
       <p className="text-sm text-text-muted mb-6">Start managing your community</p>
 
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-        <Input label="Name" id="name" placeholder="Your name" error={errors.name?.message} {...register('name')} />
         <Input label="Email" id="email" type="email" placeholder="you@example.com" error={errors.email?.message} {...register('email')} />
         <Input label="Password" id="password" type="password" placeholder="Min 8 characters" error={errors.password?.message} {...register('password')} />
         {serverError && <p className="text-xs text-danger">{serverError}</p>}

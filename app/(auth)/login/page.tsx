@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
 import Link from 'next/link'
 import { signIn } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -16,7 +16,7 @@ const schema = z.object({
 })
 type FormData = z.infer<typeof schema>
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [error, setError] = useState(searchParams.get('error') ? 'Invalid credentials' : '')
@@ -74,5 +74,13 @@ export default function LoginPage() {
         <Link href="/register" className="text-xs text-text-muted hover:text-text-secondary">Create account</Link>
       </div>
     </Card>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginForm />
+    </Suspense>
   )
 }

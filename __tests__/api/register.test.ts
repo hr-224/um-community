@@ -22,7 +22,7 @@ test('returns 400 when email already exists', async () => {
   (mockPrisma.user.findUnique as jest.Mock).mockResolvedValue({ id: '1' })
   const req = new Request('http://localhost/api/auth/register', {
     method: 'POST',
-    body: JSON.stringify({ email: 'test@test.com', password: 'password123', name: 'Test' }),
+    body: JSON.stringify({ email: 'test@test.com', password: 'password123' }),
     headers: { 'Content-Type': 'application/json' },
   })
   const res = await POST(req)
@@ -36,7 +36,7 @@ test('returns 201 on successful registration', async () => {
   ;(mockPrisma.user.create as jest.Mock).mockResolvedValue({ id: 'new-user', email: 'test@test.com' })
   const req = new Request('http://localhost/api/auth/register', {
     method: 'POST',
-    body: JSON.stringify({ email: 'new@test.com', password: 'password123', name: 'Test' }),
+    body: JSON.stringify({ email: 'new@test.com', password: 'password123' }),
     headers: { 'Content-Type': 'application/json' },
   })
   const res = await POST(req)
@@ -46,7 +46,7 @@ test('returns 201 on successful registration', async () => {
 test('returns 400 for invalid email', async () => {
   const req = new Request('http://localhost/api/auth/register', {
     method: 'POST',
-    body: JSON.stringify({ email: 'not-an-email', password: 'password123', name: 'Test' }),
+    body: JSON.stringify({ email: 'not-an-email', password: 'password123' }),
     headers: { 'Content-Type': 'application/json' },
   })
   const res = await POST(req)
@@ -56,7 +56,7 @@ test('returns 400 for invalid email', async () => {
 test('returns 400 for password under 8 chars', async () => {
   const req = new Request('http://localhost/api/auth/register', {
     method: 'POST',
-    body: JSON.stringify({ email: 'test@test.com', password: 'short', name: 'Test' }),
+    body: JSON.stringify({ email: 'test@test.com', password: 'short' }),
     headers: { 'Content-Type': 'application/json' },
   })
   const res = await POST(req)
