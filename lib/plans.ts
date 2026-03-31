@@ -14,7 +14,7 @@ export class FeatureGatedError extends Error {
   }
 }
 
-interface PlanConfig {
+export interface PlanConfig {
   limits: {
     members: number | null
     departments: number | null

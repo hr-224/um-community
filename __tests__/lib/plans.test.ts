@@ -39,3 +39,19 @@ test('checkFeatureAccess throws for quizzes on STANDARD', () => {
 test('checkFeatureAccess allows quizzes on PRO', () => {
   expect(() => checkFeatureAccess('PRO', 'quizzes')).not.toThrow()
 })
+
+test('FREE plan has department cap of 1', () => {
+  expect(PLANS.FREE.limits.departments).toBe(1)
+})
+
+test('STANDARD plan has department cap of 5', () => {
+  expect(PLANS.STANDARD.limits.departments).toBe(5)
+})
+
+test('checkPlanLimit throws PlanLimitError for departments when cap exceeded', () => {
+  expect(() => checkPlanLimit('FREE', 'departments', 1)).toThrow(PlanLimitError)
+})
+
+test('checkPlanLimit never throws for PRO unlimited departments', () => {
+  expect(() => checkPlanLimit('PRO', 'departments', 99999)).not.toThrow()
+})
