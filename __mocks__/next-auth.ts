@@ -6,4 +6,3 @@ const NextAuth = (_config: unknown) => ({
 })
 
 export default NextAuth
-export const customFetch = jest.fn()

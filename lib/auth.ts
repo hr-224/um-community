@@ -5,6 +5,7 @@ import Credentials from 'next-auth/providers/credentials'
 import Discord from 'next-auth/providers/discord'
 import { PrismaAdapter } from '@auth/prisma-adapter'
 import { prisma } from '@/lib/prisma'
+import { z } from 'zod'
 
 // ---------------------------------------------------------------------------
 // Password utilities
@@ -39,17 +40,22 @@ export const authConfig: NextAuthConfig = {
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
-        const email = credentials?.email
-        const password = credentials?.password
+        const loginSchema = z.object({
+          email: z.string().email(),
+          password: z.string().min(1),
+        })
 
-        if (typeof email !== 'string' || typeof password !== 'string') {
-          return null
-        }
+        const parsed = loginSchema.safeParse(credentials)
+        if (!parsed.success) return null
+
+        const { email, password } = parsed.data
 
         const user = await prisma.user.findUnique({ where: { email } })
         if (!user || !user.passwordHash) {
           return null
         }
+
+        if (!user.emailVerified) return null
 
         const valid = await verifyPassword(password, user.passwordHash)
         if (!valid) {
@@ -65,25 +71,37 @@ export const authConfig: NextAuthConfig = {
       },
     }),
     Discord({
-      clientId: process.env.DISCORD_CLIENT_ID ?? '',
-      clientSecret: process.env.DISCORD_CLIENT_SECRET ?? '',
+      clientId: process.env.DISCORD_CLIENT_ID!,
+      clientSecret: process.env.DISCORD_CLIENT_SECRET!,
+      profile(profile) {
+        return {
+          id: profile.id,
+          email: profile.email,
+          name: profile.username,
+          image: profile.avatar
+            ? `https://cdn.discordapp.com/avatars/${profile.id}/${profile.avatar}.png`
+            : null,
+          discordId: profile.id,
+          discordUsername: profile.username,
+        }
+      },
     }),
   ],
   callbacks: {
-    async signIn({ user, account, profile }) {
+    async signIn({ user, account }) {
       // For Discord OAuth: link to existing user by email if discordId not yet set
-      if (account?.provider === 'discord' && profile?.email) {
-        const email = profile.email as string
-        const discordId = profile.id as string | undefined
+      if (account?.provider === 'discord' && user?.email) {
+        const email = user.email
 
-        const existingUser = await prisma.user.findUnique({ where: { email } })
-        if (existingUser && !existingUser.discordId && discordId) {
+        const existing = await prisma.user.findUnique({ where: { email } })
+        if (existing && !existing.discordId) {
           await prisma.user.update({
             where: { email },
             data: {
-              discordId,
-              discordUsername: (profile.username as string | undefined) ?? undefined,
-              avatar: (profile.avatar as string | undefined) ?? undefined,
+              discordId: (user as { discordId?: string }).discordId,
+              discordUsername: (user as { discordUsername?: string }).discordUsername,
+              avatar: user.image ?? existing.avatar,
+              emailVerified: existing.emailVerified ?? new Date(),
             },
           })
         }
@@ -93,11 +111,7 @@ export const authConfig: NextAuthConfig = {
     async jwt({ token, user }) {
       if (user) {
         token.userId = user.id
-        // Fetch isSuperAdmin from DB on first sign-in
-        if (user.id) {
-          const dbUser = await prisma.user.findUnique({ where: { id: user.id } })
-          token.isSuperAdmin = dbUser?.isSuperAdmin ?? false
-        }
+        token.isSuperAdmin = (user as { isSuperAdmin?: boolean }).isSuperAdmin ?? false
       }
       return token
     },
