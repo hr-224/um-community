@@ -18,7 +18,7 @@ const icons = [
 export function IconBar() {
   const pathname = usePathname()
   return (
-    <aside className="w-[60px] bg-[#080808] border-r border-border-default flex flex-col items-center py-3 gap-1 flex-shrink-0">
+    <aside className="w-[60px] bg-bg-deep border-r border-border-default flex flex-col items-center py-3 gap-1 flex-shrink-0">
       {/* Community switcher placeholder — Phase 2 */}
       <div className="w-8 h-8 rounded-lg bg-white mb-3 flex-shrink-0" />
       <div className="w-6 h-px bg-border-default mb-1" />
@@ -28,9 +28,10 @@ export function IconBar() {
           key={href}
           href={href}
           title={label}
+          aria-label={label}
           className={cn(
             'w-9 h-9 rounded-lg flex items-center justify-center transition-colors',
-            pathname.startsWith(href)
+            pathname === href || pathname.startsWith(href + '/')
               ? 'bg-bg-elevated text-text-primary'
               : 'text-text-faint hover:text-text-muted hover:bg-bg-elevated'
           )}
@@ -40,7 +41,7 @@ export function IconBar() {
       ))}
 
       <div className="flex-1" />
-      <Link href="/admin" title="Settings" className="w-9 h-9 rounded-lg flex items-center justify-center text-text-faint hover:text-text-muted hover:bg-bg-elevated transition-colors">
+      <Link href="/admin" title="Settings" aria-label="Settings" className="w-9 h-9 rounded-lg flex items-center justify-center text-text-faint hover:text-text-muted hover:bg-bg-elevated transition-colors">
         <Settings size={16} />
       </Link>
     </aside>

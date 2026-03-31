@@ -2,6 +2,7 @@
 
 @theme {
   /* Backgrounds */
+  --color-bg-deep:     #080808;
   --color-bg-base:     #0a0a0a;
   --color-bg-surface:  #0f0f0f;
   --color-bg-elevated: #141414;

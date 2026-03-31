@@ -51,6 +51,7 @@ export function Sidebar() {
             <Link
               key={item.href}
               href={item.href}
+              aria-current={pathname === item.href ? 'page' : undefined}
               className={cn(
                 'flex items-center gap-2 px-2 py-1.5 rounded text-xs transition-colors mb-0.5',
                 pathname === item.href
