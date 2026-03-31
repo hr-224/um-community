@@ -1,5 +1,6 @@
 import { forwardRef, ButtonHTMLAttributes } from 'react'
 import { cn } from '@/lib/utils'
+import { Spinner } from '@/components/ui/Spinner'
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'ghost' | 'danger'
@@ -29,12 +30,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         className={cn(base, variants[variant], sizes[size], className)}
         {...props}
       >
-        {loading && (
-          <svg className="animate-spin h-3.5 w-3.5" fill="none" viewBox="0 0 24 24">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 00-8 8h4z" />
-          </svg>
-        )}
+        {loading && <Spinner className="h-3.5 w-3.5" />}
         {children}
       </button>
     )
