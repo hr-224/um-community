@@ -50,8 +50,10 @@ export default async function BillingPage() {
       </p>
 
       <div className="grid grid-cols-3 gap-4">
-        {planDetails.map((plan) => {
+        {planDetails.map((plan, planIndex) => {
           const isCurrent = community.planTier === plan.tier
+          const currentIndex = planDetails.findIndex(p => p.tier === community.planTier)
+          const isUpgrade = planIndex > currentIndex
           return (
             <div
               key={plan.tier}
@@ -75,7 +77,7 @@ export default async function BillingPage() {
                   </li>
                 ))}
               </ul>
-              {!isCurrent && plan.tier !== 'FREE' && (
+              {!isCurrent && isUpgrade && (
                 <a
                   href={`/api/community/create?upgrade=${plan.tier}`}
                   className="block text-center text-xs bg-white text-black px-3 py-2 rounded font-medium hover:opacity-90 transition-opacity"
