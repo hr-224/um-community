@@ -68,3 +68,13 @@ test('returns 403 when adminOnly and role is MEMBER', async () => {
   expect(res.status).toBe(403)
   expect(handler).not.toHaveBeenCalled()
 })
+
+test('returns 403 when adminOnly and role is MODERATOR', async () => {
+  mockAuth.mockResolvedValue({ user: { id: 'u1' } })
+  mockCookies.mockResolvedValue(cookieStore('c1'))
+  mockFindFirst.mockResolvedValue({ ...fakeMember, role: 'MODERATOR' })
+  const handler = jest.fn()
+  const res = await withCommunityAuth(handler, { adminOnly: true })(new Request('http://localhost'))
+  expect(res.status).toBe(403)
+  expect(handler).not.toHaveBeenCalled()
+})

@@ -2,7 +2,7 @@ import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
-import type { Community, CommunityMember } from '@/lib/generated/prisma/client'
+import type { Community, CommunityMember, MemberRole } from '@/lib/generated/prisma/client'
 
 export interface CommunityContext {
   userId: string
@@ -13,7 +13,7 @@ export interface CommunityContext {
 
 type CommunityHandler = (req: Request, ctx: CommunityContext) => Promise<Response>
 
-const ADMIN_ROLES = new Set(['OWNER', 'ADMIN'])
+const ADMIN_ROLES = new Set<MemberRole>(['OWNER', 'ADMIN'])
 
 export function withCommunityAuth(
   handler: CommunityHandler,
@@ -26,7 +26,7 @@ export function withCommunityAuth(
     }
     const cookieStore = await cookies()
     const communityId = cookieStore.get('active_community_id')?.value
-    if (!communityId) {
+    if (!communityId || communityId.length > 30) {
       return NextResponse.json({ error: 'No active community' }, { status: 400 })
     }
     const member = await prisma.communityMember.findFirst({
