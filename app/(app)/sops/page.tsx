@@ -28,6 +28,7 @@ export default async function SOPsPage() {
     where: { communityId },
     select: { id: true, title: true, version: true, publishedAt: true },
     orderBy: { publishedAt: 'desc' },
+    take: 100,
   })
 
   return (
