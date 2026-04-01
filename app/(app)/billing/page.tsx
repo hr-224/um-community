@@ -38,7 +38,7 @@ export default async function BillingPage() {
 
   const community = await prisma.community.findUnique({
     where: { id: communityId },
-    select: { planTier: true, name: true },
+    select: { planTier: true },
   })
   if (!community) redirect('/onboarding')
 
