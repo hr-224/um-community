@@ -6,6 +6,7 @@ import {
   LayoutDashboard, Users, FileText, Calendar,
   ClipboardList, Settings
 } from 'lucide-react'
+import { CommunitySwitcher } from './CommunitySwitcher'
 
 const icons = [
   { icon: LayoutDashboard, href: '/dashboard', label: 'Dashboard' },
@@ -19,8 +20,7 @@ export function IconBar() {
   const pathname = usePathname()
   return (
     <aside className="w-[60px] bg-bg-deep border-r border-border-default flex flex-col items-center py-3 gap-1 flex-shrink-0">
-      {/* Community switcher placeholder — Phase 2 */}
-      <div className="w-8 h-8 rounded-lg bg-white mb-3 flex-shrink-0" />
+      <CommunitySwitcher />
       <div className="w-6 h-px bg-border-default mb-1" />
 
       {icons.map(({ icon: Icon, href, label }) => (
