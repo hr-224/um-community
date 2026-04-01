@@ -29,11 +29,12 @@ export function CommunityProvider({
   const router = useRouter()
 
   async function switchCommunity(id: string) {
-    await fetch('/api/community/switch', {
+    const res = await fetch('/api/community/switch', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ communityId: id }),
     })
+    if (!res.ok) throw new Error('Failed to switch community')
     router.refresh()
   }
 

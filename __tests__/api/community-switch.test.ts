@@ -45,6 +45,11 @@ test('sets cookie and returns ok when valid', async () => {
   const res = await POST(req({ communityId: 'c1' }))
   expect(res.status).toBe(200)
   expect(mockCookieStore.set).toHaveBeenCalledWith(
-    'active_community_id', 'c1', expect.objectContaining({ httpOnly: true })
+    'active_community_id', 'c1', expect.objectContaining({
+      httpOnly: true,
+      sameSite: 'lax',
+      path: '/',
+      maxAge: 60 * 60 * 24 * 30,
+    })
   )
 })

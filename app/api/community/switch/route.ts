@@ -7,8 +7,14 @@ export async function POST(req: Request) {
   const session = await auth()
   if (!session?.user?.id) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const body = await req.json()
-  const communityId: string | undefined = body?.communityId
+  let body: Record<string, unknown>
+  try {
+    body = await req.json()
+  } catch {
+    return NextResponse.json({ error: 'Invalid request body' }, { status: 400 })
+  }
+
+  const communityId = typeof body?.communityId === 'string' ? body.communityId.trim() : ''
   if (!communityId) return NextResponse.json({ error: 'communityId required' }, { status: 400 })
 
   const member = await prisma.communityMember.findFirst({
