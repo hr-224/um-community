@@ -30,14 +30,13 @@ export async function POST(req: Request) {
   })
   if (existing) return NextResponse.json({ error: 'Already a member' }, { status: 409 })
 
-  await prisma.inviteLink.update({
-    where: { id: invite.id },
-    data: { useCount: { increment: 1 } },
-  })
-
   if (invite.type === 'DIRECT_ADMIT') {
     const member = await prisma.communityMember.create({
       data: { communityId: invite.communityId, userId: session.user.id, status: 'ACTIVE' },
+    })
+    await prisma.inviteLink.update({
+      where: { id: invite.id },
+      data: { useCount: { increment: 1 } },
     })
     return NextResponse.json({ member }, { status: 201 })
   }
@@ -52,6 +51,10 @@ export async function POST(req: Request) {
     const member = await prisma.communityMember.create({
       data: { communityId: invite.communityId, userId: session.user.id, status: 'ACTIVE' },
     })
+    await prisma.inviteLink.update({
+      where: { id: invite.id },
+      data: { useCount: { increment: 1 } },
+    })
     return NextResponse.json({ member }, { status: 201 })
   }
 
@@ -63,6 +66,10 @@ export async function POST(req: Request) {
       status: 'PENDING',
       formData: {},
     },
+  })
+  await prisma.inviteLink.update({
+    where: { id: invite.id },
+    data: { useCount: { increment: 1 } },
   })
   return NextResponse.json({ application, status: 'pending' }, { status: 202 })
 }
