@@ -89,6 +89,7 @@ model Session {
 model VerificationToken {
   identifier String
   token      String   @unique
+  type       String   @default("EMAIL_VERIFY")
   expires    DateTime
 
   @@unique([identifier, token])

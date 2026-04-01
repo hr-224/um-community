@@ -8,8 +8,11 @@ jest.mock('@/lib/prisma', () => ({
     verificationToken: {
       create: jest.fn(),
       findUnique: jest.fn(),
+      findFirst: jest.fn(),
+      deleteMany: jest.fn(),
       delete: jest.fn(),
     },
+    $transaction: jest.fn(),
   },
 }))
 jest.mock('@/lib/email', () => ({ sendEmail: jest.fn(), passwordResetEmailHtml: jest.fn(() => '') }))
@@ -34,9 +37,10 @@ test('forgot-password returns 200 even if user not found (no enumeration)', asyn
 })
 
 test('reset-password returns 400 for expired token', async () => {
-  ;(mock.verificationToken.findUnique as jest.Mock).mockResolvedValue({
+  ;(mock.verificationToken.findFirst as jest.Mock).mockResolvedValue({
     identifier: 'test@test.com',
     token: 'tok',
+    type: 'PASSWORD_RESET',
     expires: new Date(Date.now() - 1000),
   })
   const req = new Request('http://localhost', {

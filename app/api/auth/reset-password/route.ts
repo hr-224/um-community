@@ -13,7 +13,9 @@ export async function POST(req: Request) {
   try {
     const { token, email, password } = schema.parse(await req.json())
 
-    const record = await prisma.verificationToken.findUnique({ where: { token } })
+    const record = await prisma.verificationToken.findFirst({
+      where: { token, type: 'PASSWORD_RESET' },
+    })
     if (!record || record.identifier !== email) {
       return NextResponse.json({ error: 'Invalid or expired reset link' }, { status: 400 })
     }
@@ -23,8 +25,10 @@ export async function POST(req: Request) {
     }
 
     const passwordHash = await hashPassword(password)
-    await prisma.user.update({ where: { email }, data: { passwordHash } })
-    await prisma.verificationToken.delete({ where: { token } })
+    await prisma.$transaction([
+      prisma.user.update({ where: { email }, data: { passwordHash, emailVerified: new Date() } }),
+      prisma.verificationToken.delete({ where: { token } }),
+    ])
 
     return NextResponse.json({ message: 'Password updated successfully' })
   } catch {

@@ -37,7 +37,7 @@ export async function POST(req: Request) {
     })
 
     await prisma.verificationToken.create({
-      data: { identifier: email, token: verifyToken, expires },
+      data: { identifier: email, token: verifyToken, type: 'EMAIL_VERIFY', expires },
     })
 
     const verifyUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/verify-email?token=${verifyToken}&email=${encodeURIComponent(email)}`

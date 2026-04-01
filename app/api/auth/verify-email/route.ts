@@ -8,7 +8,9 @@ export async function GET(req: Request) {
 
   if (!token || !email) return NextResponse.redirect(`${process.env.NEXT_PUBLIC_APP_URL}/login?error=invalid`)
 
-  const record = await prisma.verificationToken.findUnique({ where: { token } })
+  const record = await prisma.verificationToken.findFirst({
+    where: { token, type: 'EMAIL_VERIFY' },
+  })
   if (!record || record.identifier !== email || record.expires < new Date()) {
     return NextResponse.redirect(`${process.env.NEXT_PUBLIC_APP_URL}/login?error=expired`)
   }

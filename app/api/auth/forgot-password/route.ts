@@ -15,7 +15,10 @@ export async function POST(req: Request) {
     const token = nanoid(32)
     const expires = new Date(Date.now() + 60 * 60 * 1000) // 1h
 
-    await prisma.verificationToken.create({ data: { identifier: email, token, expires } })
+    await prisma.verificationToken.deleteMany({
+      where: { identifier: email, type: 'PASSWORD_RESET' },
+    })
+    await prisma.verificationToken.create({ data: { identifier: email, token, type: 'PASSWORD_RESET', expires } })
 
     const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL}/reset-password?token=${token}&email=${encodeURIComponent(email)}`
     await sendEmail({ to: email, subject: 'Reset your password', html: passwordResetEmailHtml(resetUrl) })
