@@ -26,7 +26,7 @@ async function patchHandler(req: Request, ctx: CommunityContext, id: string): Pr
   }
 
   const updated = await prisma.communityMember.update({
-    where: { id },
+    where: { id, communityId: ctx.communityId },
     data: parsed.data,
   })
 
@@ -40,7 +40,7 @@ async function deleteHandler(_req: Request, ctx: CommunityContext, id: string): 
   if (!target) return NextResponse.json({ error: 'Not found' }, { status: 404 })
   if (target.role === 'OWNER') return NextResponse.json({ error: 'Cannot remove owner' }, { status: 400 })
 
-  await prisma.communityMember.delete({ where: { id } })
+  await prisma.communityMember.delete({ where: { id, communityId: ctx.communityId } })
   return NextResponse.json({ ok: true })
 }
 
