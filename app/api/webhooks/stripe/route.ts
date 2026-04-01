@@ -46,8 +46,8 @@ export async function POST(req: Request) {
         stripePriceId: sub.items.data[0].price.id,
         planTier: planTier as PlanTier,
         status: sub.status,
-        currentPeriodStart: new Date(sub.current_period_start * 1000),
-        currentPeriodEnd: new Date(sub.current_period_end * 1000),
+        currentPeriodStart: new Date(sub.items.data[0].current_period_start * 1000),
+        currentPeriodEnd: new Date(sub.items.data[0].current_period_end * 1000),
       },
     })
   }
@@ -59,7 +59,7 @@ export async function POST(req: Request) {
       data: {
         status: sub.status,
         cancelAtPeriodEnd: sub.cancel_at_period_end,
-        currentPeriodEnd: new Date(sub.current_period_end * 1000),
+        currentPeriodEnd: new Date(sub.items.data[0].current_period_end * 1000),
       },
     })
   }

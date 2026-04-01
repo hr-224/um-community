@@ -2,7 +2,7 @@ import Stripe from 'stripe'
 import { PlanTier } from './generated/prisma/client'
 
 export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-01-27.acacia',
+  apiVersion: '2026-03-25.dahlia',
 })
 
 export function getPriceIdForPlan(tier: PlanTier): string | null {
