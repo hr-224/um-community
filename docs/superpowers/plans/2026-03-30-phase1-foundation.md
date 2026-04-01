@@ -208,30 +208,44 @@ git commit -m "feat: scaffold Next.js project, archive legacy PHP"
 
 ### Task 2: Tailwind design system
 
+**Note:** This project uses **Tailwind v4** — tokens are configured via CSS `@theme` blocks in `globals.css`, NOT via `tailwind.config.ts` (that file has been deleted).
+
 **Files:**
-- Modify: `tailwind.config.ts`
 - Modify: `app/globals.css`
 
-- [ ] **Step 1: Write test for design token presence**
+- [ ] **Step 1: Write test verifying design tokens present in globals.css**
 
 Create `__tests__/design-system.test.ts`:
 
 ```typescript
-import resolveConfig from 'tailwindcss/resolveConfig'
-import tailwindConfig from '@/tailwind.config'
+import fs from 'fs'
+import path from 'path'
 
-const config = resolveConfig(tailwindConfig)
+const css = fs.readFileSync(path.join(process.cwd(), 'app/globals.css'), 'utf-8')
 
-test('design tokens include expected background colors', () => {
-  const colors = config.theme?.colors as Record<string, unknown>
-  expect(colors['bg-base']).toBe('#0a0a0a')
-  expect(colors['bg-surface']).toBe('#0f0f0f')
-  expect(colors['bg-elevated']).toBe('#141414')
+test('globals.css defines bg-base token', () => {
+  expect(css).toContain('--color-bg-base')
+  expect(css).toContain('#0a0a0a')
 })
 
-test('design tokens include border colors', () => {
-  const colors = config.theme?.colors as Record<string, unknown>
-  expect(colors['border-default']).toBe('#1c1c1c')
+test('globals.css defines bg-surface token', () => {
+  expect(css).toContain('--color-bg-surface')
+  expect(css).toContain('#0f0f0f')
+})
+
+test('globals.css defines bg-elevated token', () => {
+  expect(css).toContain('--color-bg-elevated')
+  expect(css).toContain('#141414')
+})
+
+test('globals.css defines border-default token', () => {
+  expect(css).toContain('--color-border-default')
+  expect(css).toContain('#1c1c1c')
+})
+
+test('globals.css defines text-primary token', () => {
+  expect(css).toContain('--color-text-primary')
+  expect(css).toContain('#ffffff')
 })
 ```
 
@@ -239,67 +253,51 @@ test('design tokens include border colors', () => {
 
 ```bash
 npx jest __tests__/design-system.test.ts
-# Expected: FAIL — colors not defined yet
+# Expected: FAIL — tokens not defined yet
 ```
 
-- [ ] **Step 3: Configure Tailwind with design tokens**
+- [ ] **Step 3: Replace globals.css with Tailwind v4 @theme design tokens**
 
-Replace `tailwind.config.ts`:
-
-```typescript
-import type { Config } from 'tailwindcss'
-
-const config: Config = {
-  content: [
-    './app/**/*.{ts,tsx}',
-    './components/**/*.{ts,tsx}',
-    './lib/**/*.{ts,tsx}',
-  ],
-  theme: {
-    extend: {
-      colors: {
-        'bg-base':     '#0a0a0a',
-        'bg-surface':  '#0f0f0f',
-        'bg-elevated': '#141414',
-        'bg-hover':    '#1a1a1a',
-        'border-default': '#1c1c1c',
-        'border-light':   '#222222',
-        'text-primary':   '#ffffff',
-        'text-secondary': '#888888',
-        'text-muted':     '#444444',
-        'text-faint':     '#2e2e2e',
-        'accent':         '#ffffff',
-        'success':        '#4a7a4a',
-        'success-bg':     '#0f180f',
-        'warning':        '#6a5a30',
-        'warning-bg':     '#181410',
-        'danger':         '#6a3030',
-        'danger-bg':      '#181010',
-      },
-      fontFamily: {
-        sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
-      },
-      borderRadius: {
-        DEFAULT: '8px',
-      },
-    },
-  },
-  plugins: [],
-}
-
-export default config
-```
-
-- [ ] **Step 4: Update globals.css**
-
-Replace `app/globals.css`:
+Replace `app/globals.css` entirely:
 
 ```css
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
+@import "tailwindcss";
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+@theme {
+  /* Backgrounds */
+  --color-bg-base:     #0a0a0a;
+  --color-bg-surface:  #0f0f0f;
+  --color-bg-elevated: #141414;
+  --color-bg-hover:    #1a1a1a;
+
+  /* Borders */
+  --color-border-default: #1c1c1c;
+  --color-border-light:   #222222;
+
+  /* Text */
+  --color-text-primary:   #ffffff;
+  --color-text-secondary: #888888;
+  --color-text-muted:     #444444;
+  --color-text-faint:     #2e2e2e;
+
+  /* Accent */
+  --color-accent: #ffffff;
+
+  /* Semantic */
+  --color-success:    #4a7a4a;
+  --color-success-bg: #0f180f;
+  --color-warning:    #6a5a30;
+  --color-warning-bg: #181410;
+  --color-danger:     #6a3030;
+  --color-danger-bg:  #181010;
+
+  /* Typography */
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+
+  /* Radius */
+  --radius: 8px;
+}
 
 * {
   box-sizing: border-box;
@@ -308,31 +306,36 @@ Replace `app/globals.css`:
 }
 
 body {
-  background-color: #0a0a0a;
-  color: #ffffff;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: var(--color-bg-base);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
 }
 
 /* Scrollbar */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: #0a0a0a; }
+::-webkit-scrollbar-track { background: var(--color-bg-base); }
 ::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: #333; }
 ```
 
-- [ ] **Step 5: Run test — expect PASS**
+- [ ] **Step 4: Run test — expect PASS**
 
 ```bash
 npx jest __tests__/design-system.test.ts
-# Expected: PASS
+```
+
+- [ ] **Step 5: Verify build still passes**
+
+```bash
+npm run build
 ```
 
 - [ ] **Step 6: Commit**
 
 ```bash
 git add -A
-git commit -m "feat: configure Tailwind design system with monochrome tokens"
+git commit -m "feat: configure Tailwind v4 design system with monochrome @theme tokens"
 ```
 
 ---
