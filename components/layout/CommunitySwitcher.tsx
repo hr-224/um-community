@@ -24,7 +24,7 @@ export function CommunitySwitcher() {
         title={community.name}
         className="w-8 h-8 rounded-lg bg-white flex items-center justify-center text-black text-xs font-bold flex-shrink-0 hover:opacity-90 transition-opacity"
       >
-        {community.logo
+        {community.logo && /^https?:\/\//i.test(community.logo)
           ? <img src={community.logo} alt={community.name} className="w-full h-full rounded-lg object-cover" />
           : community.name[0]?.toUpperCase() ?? '?'}
       </button>
@@ -35,7 +35,14 @@ export function CommunitySwitcher() {
           {communities.map(c => (
             <button
               key={c.id}
-              onClick={() => { switchCommunity(c.id); setOpen(false) }}
+              onClick={async () => {
+                try {
+                  await switchCommunity(c.id)
+                  setOpen(false)
+                } catch {
+                  alert('Failed to switch community. Please try again.')
+                }
+              }}
               className={cn(
                 'w-full text-left px-3 py-2 text-xs flex items-center gap-2.5 transition-colors',
                 c.id === community.id
