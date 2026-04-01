@@ -5,12 +5,14 @@ import type { CommunityContext } from '@/lib/community-auth'
 import type { MemberStatus } from '@/lib/generated/prisma/enums'
 
 const PAGE_SIZE = 50
+const VALID_STATUSES = new Set<string>(['ACTIVE', 'LOA', 'INACTIVE', 'SUSPENDED'])
 
 export const GET = withCommunityAuth(async (req: Request, ctx: CommunityContext) => {
   const url = new URL(req.url)
   const page = Math.max(1, parseInt(url.searchParams.get('page') ?? '1'))
   const departmentId = url.searchParams.get('departmentId') ?? undefined
-  const status = (url.searchParams.get('status') ?? 'ACTIVE') as MemberStatus
+  const rawStatus = url.searchParams.get('status') ?? 'ACTIVE'
+  const status: MemberStatus = VALID_STATUSES.has(rawStatus) ? rawStatus as MemberStatus : 'ACTIVE'
 
   const where = {
     communityId: ctx.communityId,

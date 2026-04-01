@@ -18,14 +18,24 @@ export default function NewEventPage() {
     e.preventDefault()
     setLoading(true)
     setError('')
-    const res = await fetch('/api/events', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title, description, startAt, endAt: endAt || undefined, location: location || undefined }),
-    })
-    const json = await res.json()
-    if (!res.ok) { setError(json.error); setLoading(false); return }
-    router.push('/events')
+    try {
+      const res = await fetch('/api/events', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title,
+          description,
+          startAt: new Date(startAt).toISOString(),
+          endAt: endAt ? new Date(endAt).toISOString() : undefined,
+          location: location || undefined,
+        }),
+      })
+      const json = await res.json()
+      if (!res.ok) { setError(json.error); return }
+      router.push('/events')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (

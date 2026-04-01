@@ -33,6 +33,13 @@ export const POST = withCommunityAuth(async (req: Request, ctx: CommunityContext
     return NextResponse.json({ error: 'Cannot message yourself' }, { status: 400 })
   }
 
+  const recipientMember = await prisma.communityMember.findFirst({
+    where: { userId: parsed.data.recipientId, communityId: ctx.communityId, status: 'ACTIVE' },
+  })
+  if (!recipientMember) {
+    return NextResponse.json({ error: 'Recipient not found in this community' }, { status: 400 })
+  }
+
   const message = await prisma.message.create({
     data: {
       communityId: ctx.communityId,

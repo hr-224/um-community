@@ -31,17 +31,25 @@ export default function MessagesPage() {
     e.preventDefault()
     setSending(true)
     setError('')
-    const res = await fetch('/api/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ recipientId, content }),
-    })
-    const json = await res.json()
-    if (!res.ok) { setError(json.error); setSending(false); return }
-    setComposing(false)
-    setRecipientId('')
-    setContent('')
-    setSending(false)
+    try {
+      const res = await fetch('/api/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ recipientId, content }),
+      })
+      const json = await res.json()
+      if (!res.ok) { setError(json.error); return }
+      setComposing(false)
+      setRecipientId('')
+      setContent('')
+      const inboxRes = await fetch('/api/messages')
+      if (inboxRes.ok) {
+        const inboxJson = await inboxRes.json()
+        setMessages(inboxJson.messages ?? [])
+      }
+    } finally {
+      setSending(false)
+    }
   }
 
   return (

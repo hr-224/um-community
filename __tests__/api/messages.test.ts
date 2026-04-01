@@ -2,7 +2,10 @@ import { GET, POST } from '@/app/api/messages/route'
 
 jest.mock('@/lib/community-auth', () => ({ withCommunityAuth: jest.fn((handler) => handler) }))
 jest.mock('@/lib/prisma', () => ({
-  prisma: { message: { findMany: jest.fn(), create: jest.fn() } },
+  prisma: {
+    message: { findMany: jest.fn(), create: jest.fn() },
+    communityMember: { findFirst: jest.fn() },
+  },
 }))
 
 import { prisma } from '@/lib/prisma'
@@ -26,6 +29,7 @@ test('GET returns inbox messages', async () => {
 })
 
 test('POST sends a message', async () => {
+  ;(prisma.communityMember.findFirst as jest.Mock).mockResolvedValue({ id: 'cm1', userId: 'u2', communityId: 'c1', status: 'ACTIVE' })
   ;(prisma.message.create as jest.Mock).mockResolvedValue({ id: 'msg1' })
   const req = new Request('http://localhost', {
     method: 'POST', headers: { 'Content-Type': 'application/json' },

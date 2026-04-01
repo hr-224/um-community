@@ -47,7 +47,6 @@ export const POST = withCommunityAuth(async (req: Request, ctx: CommunityContext
       startAt: new Date(parsed.data.startAt),
       endAt: parsed.data.endAt ? new Date(parsed.data.endAt) : undefined,
       location: parsed.data.location,
-      rsvps: {},
     },
   })
 
